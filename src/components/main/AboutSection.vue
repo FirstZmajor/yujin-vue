@@ -31,10 +31,19 @@
             <div v-for="(item, index) in listUrl" :key="index" class="text item" style="margin: 5px;">
               <el-card shadow="always" class="my-card1">
                 <div class="row">
-                  <div class="col-md-11 text-left">
-                    <span><i class="el-icon-circle-check Success" ></i> {{item.url }}</span>
+                  <div class="col-md-10 text-left">
+                    <span>
+
+                      <i :class="{'el-icon-circle-check Success': item.status , 'el-icon-circle-close': !item.status}" 
+                      @click="updateRow(index, item.status)"></i> 
+
+                      <!-- <i v-bind:class="[item.status ? 'el-icon-circle-check Success' : 'el-icon-circle-close']" 
+                      v-on:click="updateRow(index, item.status)"></i>  -->
+                      {{ item.message }}
+                    </span>
                   </div>
-                  <div class="col-md-1 text-right">
+                  <div class="col-md-2 text-right">
+                    <!-- <el-link :underline="false"><i class="el-icon-edit-outline" v-on:click="updateRow(index)"></i></el-link> -->
                     <el-link :underline="false"><i class="el-icon-close" v-on:click="removeRow(index)"></i></el-link>
                   </div>
                 </div>
@@ -47,20 +56,47 @@
 </template>
 
 <script>
+import firebase, { firestore } from 'firebase/app'
+
 export default {
     name: 'AboutSection',
     data() {
       return {
         inputURL: '',
         output: '',
-        listUrl: [
-          { url: 'https://pbs.twimg.com/media/EDl18eXUwAACN9E?format=jpg&name=360x360'}
-        ]
+        listUrl: {},
+        focused: {},
       }
+    },
+    async mounted () {
+      // firebase.database().ref('todos').once('value', (snapshot) => {
+      //   console.log(snapshot.val())
+      // })
+
+      // firebase.database().ref('todos').on('value', snapshot => {
+      //   console.log(snapshot.val())
+      //   this.listUrl = snapshot.val() 
+
+      // })
+
+      firebase.database().ref('todos').on('child_added', snapshot => {
+        this.listUrl = {
+          ...this.listUrl,
+          [snapshot.key]: snapshot.val()
+        }
+      })
+      firebase.database().ref('todos').on('child_changed', snapshot => {
+        this.listUrl = {
+          ...this.listUrl,
+          [snapshot.key]: snapshot.val()
+        }
+      })
     },
     methods: {
       addRow(){
-        this.listUrl.push({url: this.inputURL })
+        // this.listUrl.push({url: this.inputURL })
+        firebase.database().ref('todos').push( { message: this.inputURL, status: false } )
+
         // let position = this.inputURL.indexOf("&name=")
         // if (position == -1) {
         //   this.$notify.error({
@@ -75,8 +111,14 @@ export default {
         // }
       },
       removeRow(index){
-          this.listUrl.splice(index,1); // why is this removing only the last row?
-      }
+        // console.log(index)
+        firebase.database().ref('todos').child(index).remove()
+      },
+      updateRow(index, status){
+        status = !status
+        // console.log('Update ', index, status)
+        firebase.database().ref('todos').child(index).update( {status: status} )
+      },
     }
 }
 </script>

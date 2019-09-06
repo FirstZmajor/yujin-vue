@@ -5,6 +5,7 @@ import ElementUI from 'element-ui'
 
 import 'jquery/src/jquery.js'
 import 'bootstrap/dist/js/bootstrap.min.js'
+import './firebase'
 // import './assets/js/main.js'
 
 import './style/style.css'

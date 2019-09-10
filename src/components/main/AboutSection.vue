@@ -34,8 +34,11 @@
                   <div class="col-md-10 text-left">
                     <span>
 
-                      <i :class="{'el-icon-circle-check Success': item.status , 'el-icon-circle-close': !item.status}" 
-                      @click="updateRow(index, item.status)"></i> 
+                      <el-link :underline="false">
+                        <i :class="{'el-icon-circle-check Success': item.status , 'el-icon-circle-close': !item.status}"
+                        :style="{color: '#67C23'}"
+                        @click="updateRow(index, item.status)"></i> 
+                      </el-link>
 
                       <!-- <i v-bind:class="[item.status ? 'el-icon-circle-check Success' : 'el-icon-circle-close']" 
                       v-on:click="updateRow(index, item.status)"></i>  -->
@@ -43,7 +46,7 @@
                     </span>
                   </div>
                   <div class="col-md-2 text-right">
-                    <!-- <el-link :underline="false"><i class="el-icon-edit-outline" v-on:click="updateRow(index)"></i></el-link> -->
+                    <el-link :underline="false"><i class="el-icon-edit-outline" v-on:click="updateRow(index)"></i></el-link>
                     <el-link :underline="false"><i class="el-icon-close" v-on:click="removeRow(index)"></i></el-link>
                   </div>
                 </div>
@@ -57,7 +60,6 @@
 
 <script>
 import firebase, { firestore } from 'firebase/app'
-
 export default {
     name: 'AboutSection',
     data() {
@@ -69,16 +71,6 @@ export default {
       }
     },
     async mounted () {
-      // firebase.database().ref('todos').once('value', (snapshot) => {
-      //   console.log(snapshot.val())
-      // })
-
-      // firebase.database().ref('todos').on('value', snapshot => {
-      //   console.log(snapshot.val())
-      //   this.listUrl = snapshot.val() 
-
-      // })
-
       firebase.database().ref('todos').on('child_added', snapshot => {
         this.listUrl = {
           ...this.listUrl,
@@ -94,31 +86,20 @@ export default {
     },
     methods: {
       addRow(){
-        // this.listUrl.push({url: this.inputURL })
         firebase.database().ref('todos').push( { message: this.inputURL, status: false } )
-
-        // let position = this.inputURL.indexOf("&name=")
-        // if (position == -1) {
-        //   this.$notify.error({
-        //     title: 'Sorry!',
-        //     message: 'We not found URL.',
-        //     position: 'bottom-right',
-        //     offset: 100
-        //   });
-        // } else {
-        //   let cutting = this.inputURL.slice(0, position)
-        //   this.listUrl.push({url: cutting + '&name=large' })
-        // }
       },
       removeRow(index){
-        // console.log(index)
         firebase.database().ref('todos').child(index).remove()
       },
       updateRow(index, status){
         status = !status
-        // console.log('Update ', index, status)
         firebase.database().ref('todos').child(index).update( {status: status} )
       },
     }
 }
 </script>
+<style scoped>
+  .el-icon-circle-check {
+    color: #67C23A
+  }
+</style>

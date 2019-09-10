@@ -13,7 +13,6 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
 import MyHeader from './components/MyHeader.vue'
 import HeroSession from './components/HeroSession.vue'
 import MainSection from './components/MainSection.vue'
@@ -22,7 +21,6 @@ import MyFooter from './components/MyFooter.vue'
 export default {
   name: 'app',
   components: {
-    // HelloWorld,
     MyHeader,
     HeroSession,
     MainSection,
